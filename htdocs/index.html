@@ -1,0 +1,11 @@
+<HTML>
+<TITLE>Index</TITLE>
+<BODY>
+<P>Welcome to J. David's webserver.
+<H1>CGI demo
+<FORM ACTION="color.cgi" METHOD="POST">
+Enter a color: <INPUT TYPE="text" NAME="color">
+<INPUT TYPE="submit">
+</FORM>
+</BODY>
+</HTML>
