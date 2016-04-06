@@ -30,7 +30,7 @@
 
 #define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
 
-void accept_request(int);
+void accept_request(void *);
 void bad_request(int);
 void cat(int, FILE *);
 void cannot_execute(int);
@@ -48,8 +48,10 @@ void unimplemented(int);
  * return.  Process the request appropriately.
  * Parameters: the socket connected to the client */
 /**********************************************************************/
-void accept_request(int client)
+void accept_request(void *arg)
 {
+ int *data = (int*)arg;
+ int client = *data;
  char buf[1024];
  int numchars;
  char method[255];
@@ -433,7 +435,7 @@ int startup(u_short *port)
   error_die("bind");
  if (*port == 0)  /* if dynamically allocating a port */
  {
-  int namelen = sizeof(name);
+  socklen_t namelen = (socklen_t)sizeof(name);
   if (getsockname(httpd, (struct sockaddr *)&name, &namelen) == -1)
    error_die("getsockname");
   *port = ntohs(name.sin_port);
@@ -478,7 +480,7 @@ int main(void)
  u_short port = 0;
  int client_sock = -1;
  struct sockaddr_in client_name;
- int client_name_len = sizeof(client_name);
+ socklen_t client_name_len = (socklen_t)sizeof(client_name);
  pthread_t newthread;
 
  server_sock = startup(&port);
@@ -492,7 +494,7 @@ int main(void)
   if (client_sock == -1)
    error_die("accept");
  /* accept_request(client_sock); */
- if (pthread_create(&newthread , NULL, accept_request, client_sock) != 0)
+ if (pthread_create(&newthread , NULL, (void *)&accept_request, (void *)(&client_sock)) != 0)
    perror("pthread_create");
  }
 
