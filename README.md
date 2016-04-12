@@ -1,4 +1,5 @@
 A mirror for tinyhttpd
+测试CGI时需要本机安装PERL，同时安装perl-cgi
 
 <p>&nbsp; &nbsp; &nbsp;每个函数的作用：</p>
 <p>&nbsp; &nbsp; &nbsp;accept_request: &nbsp;处理从套接字上监听到的一个 HTTP 请求，在这里可以很大一部分地体现服务器处理请求流程。</p>
