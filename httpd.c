@@ -429,6 +429,7 @@ void serve_file(int client, const char *filename)
 int startup(u_short *port)
 {
     int httpd = 0;
+    int on = 1;
     struct sockaddr_in name;
 
     httpd = socket(PF_INET, SOCK_STREAM, 0);
@@ -438,6 +439,10 @@ int startup(u_short *port)
     name.sin_family = AF_INET;
     name.sin_port = htons(*port);
     name.sin_addr.s_addr = htonl(INADDR_ANY);
+    if ((setsockopt(httpd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) < 0)  
+    {  
+        error_die("setsockopt failed");
+    }
     if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)
         error_die("bind");
     if (*port == 0)  /* if dynamically allocating a port */
