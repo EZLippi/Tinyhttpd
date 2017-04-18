@@ -54,7 +54,7 @@ void unimplemented(int);
 /**********************************************************************/
 void accept_request(void *arg)
 {
-    int client = (intptr_t)arg;
+    int client = *(int*)arg;
     char buf[1024];
     size_t numchars;
     char method[255];
