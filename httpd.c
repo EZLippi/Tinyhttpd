@@ -54,7 +54,7 @@ void unimplemented(int);
 /**********************************************************************/
 void accept_request(void *arg)
 {
-    int client = *(int*)arg;
+    int client = (intptr_t)arg;
     char buf[1024];
     size_t numchars;
     char method[255];
@@ -506,7 +506,7 @@ int main(void)
         if (client_sock == -1)
             error_die("accept");
         /* accept_request(&client_sock); */
-        if (pthread_create(&newthread , NULL, (void *)accept_request, (void *)&client_sock) != 0)
+        if (pthread_create(&newthread , NULL, (void *)accept_request, (void *)(intptr_t)client_sock) != 0)
             perror("pthread_create");
     }
 
