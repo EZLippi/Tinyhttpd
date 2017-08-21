@@ -43,7 +43,7 @@ void execute_cgi(int, const char *, const char *, const char *);
 int get_line(int, char *, int);
 void headers(int, const char *);
 void not_found(int);
-void serve_file(int, const char *);
+void sever_file(int, const char *);
 int startup(u_short *);
 void unimplemented(int);
 
@@ -125,7 +125,7 @@ void accept_request(void *arg)
                 (st.st_mode & S_IXOTH)    )
             cgi = 1;
         if (!cgi)
-            serve_file(client, path);
+            sever_file(client, path);
         else
             execute_cgi(client, path, method, query_string);
     }
@@ -397,7 +397,7 @@ void not_found(int client)
  *              file descriptor
  *             the name of the file to serve */
 /**********************************************************************/
-void serve_file(int client, const char *filename)
+void sever_file(int client, const char *filename)
 {
     FILE *resource = NULL;
     int numchars = 1;
