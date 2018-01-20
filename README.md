@@ -1,4 +1,4 @@
-A mirror for tinyhttpd
+A mirror for tinyhttpd(Tinyhttpd非官方镜像)
 测试CGI时需要本机安装PERL，同时安装perl-cgi
 
 ### Prepare 
