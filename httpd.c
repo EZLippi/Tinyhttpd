@@ -162,14 +162,15 @@ void bad_request(int client)
 /**********************************************************************/
 void cat(int client, FILE *resource)
 {
-    char buf[1024];
-
-    fgets(buf, sizeof(buf), resource);
-    while (!feof(resource))
-    {
-        send(client, buf, strlen(buf), 0);
-        fgets(buf, sizeof(buf), resource);
-    }
+    fseek(resource, 0, SEEK_END);
+    int end = ftell(resource);
+    fseek(resource, 0, SEEK_SET);
+    int start = ftell(resource);
+    int length = end - start;
+    unsigned char *buf = (unsigned char *)malloc(length);
+    int len = fread((void *)buf, length, 1, resource);
+    send(client, buf, length, 0);
+    free(buf);
 }
 
 /**********************************************************************/
