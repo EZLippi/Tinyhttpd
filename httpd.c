@@ -69,7 +69,7 @@ void accept_request(int client)
   i++; j++;
  }
  method[i] = '\0';
-
+ printf("accept_request: method: %s", method);
  if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))
  {
   unimplemented(client);
@@ -88,7 +88,7 @@ void accept_request(int client)
   i++; j++;
  }
  url[i] = '\0';
-
+ printf("accept_request: url: %s", url);
  if (strcasecmp(method, "GET") == 0)
  {
   query_string = url;
@@ -100,6 +100,7 @@ void accept_request(int client)
    *query_string = '\0';
    query_string++;
   }
+  printf("accept_request: query_string: %s", query_string);
  }
 
  sprintf(path, "htdocs%s", url);
@@ -112,16 +113,16 @@ void accept_request(int client)
  }
  else
  {
-  if ((st.st_mode & S_IFMT) == S_IFDIR)
-   strcat(path, "/index.html");
-  if ((st.st_mode & S_IXUSR) ||
-      (st.st_mode & S_IXGRP) ||
-      (st.st_mode & S_IXOTH)    )
-   cgi = 1;
-  if (!cgi)
-   serve_file(client, path);
-  else
-   execute_cgi(client, path, method, query_string);
+      if ((st.st_mode & S_IFMT) == S_IFDIR)
+       strcat(path, "/index.html");
+      if ((st.st_mode & S_IXUSR) ||
+          (st.st_mode & S_IXGRP) ||
+          (st.st_mode & S_IXOTH)    )
+       cgi = 1;
+      if (!cgi)
+       serve_file(client, path);
+      else
+       execute_cgi(client, path, method, query_string);
  }
 
  close(client);
