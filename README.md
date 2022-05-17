@@ -1,6 +1,8 @@
 A mirror for tinyhttpd(Tinyhttpd非官方镜像,Fork自[sourceForge](https://sourceforge.net/projects/tiny-httpd/),仅供学习)
 
-测试CGI时需要本机安装PERL，同时安装perl-cgi
+测试CGI时需要本机安装PERL，同时安装perl-cgi: yum install per-CGI
+首先需要对htdoc文件夹下的color.cgi和index.html进行权限查看，并把color.cgi改为777，index.html改为666
+执行which perl的命令，查看perl的路径，记录下来并vim修改color.cgi的第一行代码为所在路径
 
 ### Prepare 
 Compile for Linux
