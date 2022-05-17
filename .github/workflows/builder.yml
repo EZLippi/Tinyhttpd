@@ -28,3 +28,14 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send greeting
       run: echo "Hello ${{ github.event.inputs.name }}"
+ 
+    - name: get the version
+       id: get_version
+       run: |
+        GIT_VERSION=$(git describe --tags)
+        echo ::set-output name=BUILD_TAG::httpd-$GIT_VERSION
+        
+    - name: create release
+       uses: ncipollo/release-action@v1.9.0
+       with:
+        tag: ${{ steps.get_version.outputs.BUILD_TAG }}
