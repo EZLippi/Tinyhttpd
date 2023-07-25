@@ -4,18 +4,18 @@
  * CSE 4344 (Network concepts), Prof. Zeigler
  * University of Texas at Arlington
  */
-/* This program compiles for Sparc Solaris 2.6.
- * To compile for Linux:
- *  1) Comment out the #include <pthread.h> line.
- *  2) Comment out the line that defines the variable newthread.
- *  3) Comment out the two lines that run pthread_create().
- *  4) Uncomment the line that runs accept_request().
- *  5) Remove -lsocket from the Makefile.
- */
+ /* This program compiles for Sparc Solaris 2.6.
+  * To compile for Linux:
+  *  1) Comment out the #include <pthread.h> line.
+  *  2) Comment out the line that defines the variable newthread.
+  *  3) Comment out the two lines that run pthread_create().
+  *  4) Uncomment the line that runs accept_request().
+  *  5) Remove -lsocket from the Makefile.
+  */
 #include <stdio.h>
-// #include <netinet/in.h>  // <Linux> 
-// #include <sys/socket.h>  // <Linux> 
-// #include <arpa/inet.h>   // <Linux> 
+  // #include <netinet/in.h>  // <Linux> 
+  // #include <sys/socket.h>  // <Linux> 
+  // #include <arpa/inet.h>   // <Linux> 
 #include <winsock2.h>               // <Windows>
 #pragma comment(lib,"Ws2_32.lib")   // <Windows>
 #include <sys/types.h>
@@ -36,25 +36,25 @@
 #define STDOUT  1
 #define STDERR  2
 
-void accept_request(void *);
+void accept_request(void*);
 void bad_request(int);
-void cat(int, FILE *);
+void cat(int, FILE*);
 void cannot_execute(int);
-void error_die(const char *);
-void execute_cgi(int, const char *, const char *, const char *);
-int get_line(int, char *, int);
-void headers(int, const char *);
+void error_die(const char*);
+void execute_cgi(int, const char*, const char*, const char*);
+int get_line(int, char*, int);
+void headers(int, const char*);
 void not_found(int);
-void serve_file(int, const char *);
-int startup(u_short *);
+void serve_file(int, const char*);
+int startup(u_short*);
 void unimplemented(int);
 
 /**********************************************************************/
 /* A request has caused a call to accept() on the server port to
  * return.  Process the request appropriately.
  * Parameters: the socket connected to the client */
-/**********************************************************************/
-void accept_request(void *arg)
+ /**********************************************************************/
+void accept_request(void* arg)
 {
     int client = (intptr_t)arg;
     char buf[1024];
@@ -66,7 +66,7 @@ void accept_request(void *arg)
     struct stat st;
     int cgi = 0;      /* becomes true if server decides this is a CGI
                        * program */
-    char *query_string = NULL;
+    char* query_string = NULL;
 
     numchars = get_line(client, buf, sizeof(buf));
     i = 0; j = 0;
@@ -75,7 +75,7 @@ void accept_request(void *arg)
         method[i] = buf[i];
         i++;
     }
-    j=i;
+    j = i;
     method[i] = '\0';
 
     if (strcasecmp(method, "GET") && strcasecmp(method, "POST"))
@@ -123,8 +123,8 @@ void accept_request(void *arg)
         if ((st.st_mode & S_IFMT) == S_IFDIR)
             strcat(path, "/index.html");
         if ((st.st_mode & S_IXUSR) ||
-                (st.st_mode & S_IXGRP) ||
-                (st.st_mode & S_IXOTH)    )
+            (st.st_mode & S_IXGRP) ||
+            (st.st_mode & S_IXOTH))
             cgi = 1;
         if (!cgi)
             serve_file(client, path);
@@ -138,7 +138,7 @@ void accept_request(void *arg)
 /**********************************************************************/
 /* Inform the client that a request it has made has a problem.
  * Parameters: client socket */
-/**********************************************************************/
+ /**********************************************************************/
 void bad_request(int client)
 {
     char buf[1024];
@@ -161,8 +161,8 @@ void bad_request(int client)
  * easier just to do something like pipe, fork, and exec("cat").
  * Parameters: the client socket descriptor
  *             FILE pointer for the file to cat */
-/**********************************************************************/
-void cat(int client, FILE *resource)
+ /**********************************************************************/
+void cat(int client, FILE* resource)
 {
     char buf[1024];
 
@@ -177,7 +177,7 @@ void cat(int client, FILE *resource)
 /**********************************************************************/
 /* Inform the client that a CGI script could not be executed.
  * Parameter: the client socket descriptor. */
-/**********************************************************************/
+ /**********************************************************************/
 void cannot_execute(int client)
 {
     char buf[1024];
@@ -196,8 +196,8 @@ void cannot_execute(int client)
 /* Print out an error message with perror() (for system errors; based
  * on value of errno, which indicates system call errors) and exit the
  * program indicating an error. */
-/**********************************************************************/
-void error_die(const char *sc)
+ /**********************************************************************/
+void error_die(const char* sc)
 {
     perror(sc);
     exit(1);
@@ -208,9 +208,9 @@ void error_die(const char *sc)
  * appropriate.
  * Parameters: client socket descriptor
  *             path to the CGI script */
-/**********************************************************************/
-void execute_cgi(int client, const char *path,
-        const char *method, const char *query_string)
+ /**********************************************************************/
+void execute_cgi(int client, const char* path,
+    const char* method, const char* query_string)
 {
     char buf[1024];
     int cgi_output[2];
@@ -255,7 +255,7 @@ void execute_cgi(int client, const char *path,
         return;
     }
 
-    if ( (pid = fork()) < 0 ) {
+    if ((pid = fork()) < 0) {
         cannot_execute(client);
         return;
     }
@@ -283,7 +283,8 @@ void execute_cgi(int client, const char *path,
         }
         execl(path, NULL);
         exit(0);
-    } else {    /* parent */
+    }
+    else {    /* parent */
         close(cgi_output[1]);
         close(cgi_input[0]);
         if (strcasecmp(method, "POST") == 0)
@@ -312,8 +313,8 @@ void execute_cgi(int client, const char *path,
  *             the buffer to save the data in
  *             the size of the buffer
  * Returns: the number of bytes stored (excluding null) */
-/**********************************************************************/
-int get_line(int sock, char *buf, int size)
+ /**********************************************************************/
+int get_line(int sock, char* buf, int size)
 {
     int i = 0;
     char c = '\0';
@@ -349,8 +350,8 @@ int get_line(int sock, char *buf, int size)
 /* Return the informational HTTP headers about a file. */
 /* Parameters: the socket to print the headers on
  *             the name of the file */
-/**********************************************************************/
-void headers(int client, const char *filename)
+ /**********************************************************************/
+void headers(int client, const char* filename)
 {
     char buf[1024];
     (void)filename;  /* could use filename to determine file type */
@@ -398,10 +399,10 @@ void not_found(int client)
  * Parameters: a pointer to a file structure produced from the socket
  *              file descriptor
  *             the name of the file to serve */
-/**********************************************************************/
-void serve_file(int client, const char *filename)
+ /**********************************************************************/
+void serve_file(int client, const char* filename)
 {
-    FILE *resource = NULL;
+    FILE* resource = NULL;
     int numchars = 1;
     char buf[1024];
 
@@ -427,8 +428,8 @@ void serve_file(int client, const char *filename)
  * port.
  * Parameters: pointer to variable containing the port to connect on
  * Returns: the socket */
-/**********************************************************************/
-int startup(u_short *port)
+ /**********************************************************************/
+int startup(u_short* port)
 {
     int httpd = 0;
     int on = 1;
@@ -441,16 +442,16 @@ int startup(u_short *port)
     name.sin_family = AF_INET;
     name.sin_port = htons(*port);
     name.sin_addr.s_addr = htonl(INADDR_ANY);
-    if ((setsockopt(httpd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) < 0)  
-    {  
+    if ((setsockopt(httpd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) < 0)
+    {
         error_die("setsockopt failed");
     }
-    if (bind(httpd, (struct sockaddr *)&name, sizeof(name)) < 0)
+    if (bind(httpd, (struct sockaddr*)&name, sizeof(name)) < 0)
         error_die("bind");
     if (*port == 0)  /* if dynamically allocating a port */
     {
         socklen_t namelen = sizeof(name);
-        if (getsockname(httpd, (struct sockaddr *)&name, &namelen) == -1)
+        if (getsockname(httpd, (struct sockaddr*)&name, &namelen) == -1)
             error_die("getsockname");
         *port = ntohs(name.sin_port);
     }
@@ -463,7 +464,7 @@ int startup(u_short *port)
 /* Inform the client that the requested web method has not been
  * implemented.
  * Parameter: the client socket */
-/**********************************************************************/
+ /**********************************************************************/
 void unimplemented(int client)
 {
     char buf[1024];
@@ -503,12 +504,12 @@ int main(void)
     while (1)
     {
         client_sock = accept(server_sock,
-                (struct sockaddr *)&client_name,
-                &client_name_len);
+            (struct sockaddr*)&client_name,
+            &client_name_len);
         if (client_sock == -1)
             error_die("accept");
         /* accept_request(&client_sock); */
-        if (pthread_create(&newthread , NULL, (void *)accept_request, (void *)(intptr_t)client_sock) != 0)
+        if (pthread_create(&newthread, NULL, (void*)accept_request, (void*)(intptr_t)client_sock) != 0)
             perror("pthread_create");
     }
 
