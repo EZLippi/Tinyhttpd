@@ -13,17 +13,19 @@
  *  5) Remove -lsocket from the Makefile.
  */
 #include <stdio.h>
-#include <sys/socket.h>
+// #include <netinet/in.h>  // <Linux> 
+// #include <sys/socket.h>  // <Linux> 
+// #include <arpa/inet.h>   // <Linux> 
+#include <winsock2.h>               // <Windows>
+#pragma comment(lib,"Ws2_32.lib")   // <Windows>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+// #include <unistd.h>
 #include <ctype.h>
-#include <strings.h>
+// #include <strings.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <pthread.h>
-#include <sys/wait.h>
+// #include <pthread.h>
+// #include <sys/wait.h>
 #include <stdlib.h>
 #include <stdint.h>
 
