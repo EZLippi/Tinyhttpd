@@ -40,17 +40,17 @@
 
 //void accept_request(void *);
 void accept_request(SOCKET);
-void bad_request(int);
-void cat(int, FILE*);
-void cannot_execute(int);
+void bad_request(SOCKET);
+void cat(SOCKET, FILE*);
+void cannot_execute(SOCKET);
 inline void error_die(const char*);
-void execute_cgi(int, const char*, const char*, const char*);
-int get_line(int, char*, int);
-void headers(int, const char*);
-void not_found(int);
-void serve_file(int, const char*);
+void execute_cgi(SOCKET, const char*, const char*, const char*);
+int get_line(SOCKET, char*, int);
+void headers(SOCKET, const char*);
+void not_found(SOCKET);
+void serve_file(SOCKET, const char*);
 SOCKET startup(u_short*);
-void unimplemented(int);
+void unimplemented(SOCKET);
 
 /**********************************************************************/
 /* Print out an error message with perror() (for system errors; based
@@ -181,7 +181,7 @@ void accept_request(SOCKET client)
 /* Inform the client that a request it has made has a problem.
  * Parameters: client socket */
  /**********************************************************************/
-void bad_request(int client)
+void bad_request(SOCKET client)
 {
 	char buf[1024];
 
@@ -204,14 +204,14 @@ void bad_request(int client)
  * Parameters: the client socket descriptor
  *             FILE pointer for the file to cat */
  /**********************************************************************/
-void cat(int client, FILE* resource)
+void cat(SOCKET client, FILE* resource)
 {
 	char buf[1024];
 
 	fgets(buf, sizeof(buf), resource);
 	while (!feof(resource))
 	{
-		send(client, buf, strlen(buf), 0);
+		send(client, buf, int(strlen(buf)), 0);
 		fgets(buf, sizeof(buf), resource);
 	}
 }
@@ -220,18 +220,18 @@ void cat(int client, FILE* resource)
 /* Inform the client that a CGI script could not be executed.
  * Parameter: the client socket descriptor. */
  /**********************************************************************/
-void cannot_execute(int client)
+void cannot_execute(SOCKET client)
 {
 	char buf[1024];
 
 	sprintf_s(buf, "HTTP/1.0 500 Internal Server Error\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "Content-type: text/html\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "<P>Error prohibited CGI execution.\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 }
 
 /**********************************************************************/
@@ -240,7 +240,7 @@ void cannot_execute(int client)
  * Parameters: client socket descriptor
  *             path to the CGI script */
  /**********************************************************************/
-void execute_cgi(int client, const char* path,
+void execute_cgi(SOCKET client, const char* path,
 	const char* method, const char* query_string)
 {
 	//char buf[1024];
@@ -345,7 +345,7 @@ void execute_cgi(int client, const char* path,
  *             the size of the buffer
  * Returns: the number of bytes stored (excluding null) */
  /**********************************************************************/
-int get_line(int sock, char* buf, int size)
+int get_line(SOCKET sock, char* buf, int size)
 {
 	int i = 0;
 	char c = '\0';
@@ -382,46 +382,46 @@ int get_line(int sock, char* buf, int size)
 /* Parameters: the socket to print the headers on
  *             the name of the file */
  /**********************************************************************/
-void headers(int client, const char* filename)
+void headers(SOCKET client, const char* filename)
 {
 	char buf[1024];
 	(void)filename;  /* could use filename to determine file type */
 
 	strcpy_s(buf, sizeof(buf), "HTTP/1.0 200 OK\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	strcpy_s(buf, sizeof(buf), SERVER_STRING);
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, sizeof(buf), "Content-Type: text/html\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	strcpy_s(buf, sizeof(buf), "\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 }
 
 /**********************************************************************/
 /* Give a client a 404 not found status message. */
 /**********************************************************************/
-void not_found(int client)
+void not_found(SOCKET client)
 {
 	char buf[1024];
 
 	sprintf_s(buf, "HTTP/1.0 404 NOT FOUND\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, SERVER_STRING);
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "Content-Type: text/html\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "<HTML><TITLE>Not Found</TITLE>\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "<BODY><P>The server could not fulfill\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "your request because the resource specified\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "is unavailable or nonexistent.\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "</BODY></HTML>\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 }
 
 /**********************************************************************/
@@ -431,7 +431,7 @@ void not_found(int client)
  *              file descriptor
  *             the name of the file to serve */
  /**********************************************************************/
-void serve_file(int client, const char* filename)
+void serve_file(SOCKET client, const char* filename)
 {
 	FILE* resource = NULL;
 	int numchars = 1;
@@ -497,26 +497,26 @@ SOCKET startup(u_short* port)
  * implemented.
  * Parameter: the client socket */
  /**********************************************************************/
-void unimplemented(int client)
+void unimplemented(SOCKET client)
 {
 	char buf[1024];
 
 	sprintf_s(buf, "HTTP/1.0 501 Method Not Implemented\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, SERVER_STRING);
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "Content-Type: text/html\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "<HTML><HEAD><TITLE>Method Not Implemented\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "</TITLE></HEAD>\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "<BODY><P>HTTP request method not supported.\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 	sprintf_s(buf, "</BODY></HTML>\r\n");
-	send(client, buf, strlen(buf), 0);
+	send(client, buf, (int)strlen(buf), 0);
 }
 
 /**********************************************************************/
