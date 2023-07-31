@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int main2(int argc, char *argv[])
 {
     int sockfd;
     int len;

@@ -1,3 +1,6 @@
+// 提交测试
+该项目的目的是学习并改写为 windows 环境下 C++ 构建的项目。
+
 A mirror for tinyhttpd(Tinyhttpd非官方镜像,Fork自[sourceForge](https://sourceforge.net/projects/tiny-httpd/),仅供学习)
 
 测试CGI时需要本机安装PERL，同时安装perl-cgi
